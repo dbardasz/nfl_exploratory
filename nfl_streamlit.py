@@ -208,9 +208,13 @@ filtered_downs = streamlit_data.loc[(streamlit_data['posteam'].isin(down_teams))
                                     (streamlit_data['offense_formation'].isin(formation)) &
                                     (streamlit_data['posteam_type'].isin(homeaway))]
 
+# group dataframe based on team and play type
+down_grouped = filtered_df.groupby(['down', 'play_type'], as_index=False)['posteam'].count()
+down_grouped.rename(columns={'posteam': 'play_count'}, inplace=True)
+
 
 if st.button('Click to Generate Bar Chart'):
-    fig = px.bar(filtered_downs, x='down', y='play_count',
+    fig = px.bar(down_grouped, x='down', y='play_count',
                  color='play_type', barmode='group')
     st.plotly_chart(fig, use_container_width=True)
     # fig, ax = plt.subplots()
@@ -251,9 +255,13 @@ filtered_qtr = streamlit_data.loc[(streamlit_data['posteam'].isin(qtr_teams)) &
                                     (streamlit_data['offense_formation'].isin(qtr_formation)) &
                                     (streamlit_data['posteam_type'].isin(qtr_homeaway))]
 
+# group dataframe based on team and play type
+qtr_grouped = filtered_df.groupby(['qtr', 'play_type'], as_index=False)['posteam'].count()
+qtr_grouped.rename(columns={'posteam': 'play_count'}, inplace=True)
+
 
 if st.button('Click to Generate Bar Chart', key=15):
-    fig = px.bar(filtered_qtr, x='qtr', y='play_count',
+    fig = px.bar(qtr_grouped, x='qtr', y='play_count',
                  color='play_type', barmode='group')
     st.plotly_chart(fig, use_container_width=True)
     # fig, ax = plt.subplots()
