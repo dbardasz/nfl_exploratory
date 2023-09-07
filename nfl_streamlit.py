@@ -57,6 +57,7 @@ streamlit_data = regular_season[['home_team',
                                  'posteam_type',
                                  'defteam',
                                  'side_of_field',
+                                 'score_differential',
                                  'yardline_100',
                                  'game_date',
                                  'quarter_seconds_remaining',
@@ -274,3 +275,82 @@ else:
     st.write('Please make your selections to generate the plot')
 
 st.divider()
+
+# new plot play types by distance to go
+st.subheader('NFL Play Types by Distance to Go')
+
+
+# create  new multiselects, defaults to all options
+dist_teams = st.multiselect('Select Team(s)', team_options, default=team_options, key=16)
+dist_down = st.multiselect('Select Down', down_options, default=down_options, key=17)
+dist_qtr = st.slider('Select Quarter', min_value=1, max_value=5, value=(1, 5), key=18)
+dist_formation = st.multiselect('Select Formation', formation_options, default=formation_options, key=19)
+dist_homeaway = st.multiselect('Select Home/Away Team', posteamtype_options, default=posteamtype_options, key=20)
+
+
+# filter dataframe to selected options
+filtered_dist = streamlit_data.loc[(streamlit_data['posteam'].isin(dist_teams)) &
+                                    (streamlit_data['down'].isin(dist_down)) &
+                                    (list(dist_qtr)[0] <= streamlit_data['qtr']) &
+                                    (streamlit_data['qtr'] <= list(dist_qtr)[-1]) &
+                                    (streamlit_data['offense_formation'].isin(dist_formation)) &
+                                    (streamlit_data['posteam_type'].isin(dist_homeaway))]
+
+# group dataframe based on team and play type
+dist_grouped = filtered_dist.groupby(['downs_label', 'play_type'], as_index=False)['posteam'].count()
+dist_grouped.rename(columns={'posteam': 'play_count'}, inplace=True)
+
+
+if st.button('Click to Generate Bar Chart', key=21):
+    fig = px.bar(dist_grouped, x='downs_label', y='play_count',
+                 color='play_type', barmode='group')
+    st.plotly_chart(fig, use_container_width=True)
+    # fig, ax = plt.subplots()
+    #
+    # down_grouped.plot('down', ['pass', 'run'], kind='bar', ax=ax)
+    # plt.title('2022 NFL Play Types by Down')
+    #
+    # st.pyplot(fig)
+else:
+    st.write('Please make your selections to generate the plot')
+
+
+st.divider()
+
+# new plot play types by distance to go
+st.subheader('NFL Run Location')
+
+
+# create  new multiselects, defaults to all options
+run_teams = st.multiselect('Select Team(s)', team_options, default=team_options, key=22)
+run_down = st.multiselect('Select Down', down_options, default=down_options, key=23)
+run_qtr = st.slider('Select Quarter', min_value=1, max_value=5, value=(1, 5), key=24)
+run_togo = st.multiselect('Select Distance to Go', distancetogo_options, default=distancetogo_options, key=25)
+run_formation = st.multiselect('Select Formation', formation_options, default=formation_options, key=26)
+run_homeaway = st.multiselect('Select Home/Away Team', posteamtype_options, default=posteamtype_options, key=27)
+
+
+# filter dataframe to selected options
+filtered_run = streamlit_data.loc[(streamlit_data['posteam'].isin(run_teams)) &
+                                    (streamlit_data['down'].isin(run_down)) &
+                                    (list(run_qtr)[0] <= streamlit_data['qtr']) &
+                                    (streamlit_data['qtr'] <= list(run_qtr)[-1]) &
+                                    (streamlit_data['offense_formation'].isin(run_formation)) &
+                                    (streamlit_data['posteam_type'].isin(run_homeaway)) &
+                                    (streamlit_data['play_type'] == 'run')]
+
+# group dataframe based on team and play type
+run_grouped = filtered_run.groupby(['run_location'], as_index=False)['play_count'].sum()
+
+
+if st.button('Click to Generate Bar Chart', key=28):
+    fig = px.bar(run_grouped, x='run_location', y='play_count')
+    st.plotly_chart(fig, use_container_width=True)
+    # fig, ax = plt.subplots()
+    #
+    # down_grouped.plot('down', ['pass', 'run'], kind='bar', ax=ax)
+    # plt.title('2022 NFL Play Types by Down')
+    #
+    # st.pyplot(fig)
+else:
+    st.write('Please make your selections to generate the plot')
