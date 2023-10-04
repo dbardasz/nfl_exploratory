@@ -210,7 +210,7 @@ filtered_downs = streamlit_data.loc[(streamlit_data['posteam'].isin(down_teams))
                                     (streamlit_data['posteam_type'].isin(homeaway))]
 
 # group dataframe based on team and play type
-down_grouped = filtered_df.groupby(['down', 'play_type'], as_index=False)['posteam'].count()
+down_grouped = filtered_downs.groupby(['down', 'play_type'], as_index=False)['posteam'].count()
 down_grouped.rename(columns={'posteam': 'play_count'}, inplace=True)
 
 
@@ -257,7 +257,7 @@ filtered_qtr = streamlit_data.loc[(streamlit_data['posteam'].isin(qtr_teams)) &
                                     (streamlit_data['posteam_type'].isin(qtr_homeaway))]
 
 # group dataframe based on team and play type
-qtr_grouped = filtered_df.groupby(['qtr', 'play_type'], as_index=False)['posteam'].count()
+qtr_grouped = filtered_qtr.groupby(['qtr', 'play_type'], as_index=False)['posteam'].count()
 qtr_grouped.rename(columns={'posteam': 'play_count'}, inplace=True)
 
 
